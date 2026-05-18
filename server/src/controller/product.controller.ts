@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import type { AuthRequest } from "../middlewares/auth.middleware.js";
 import Product from "../models/product.model.js";
+import { ApiError, ApiResponse } from "../utils/apiResponse.js";
 
 export const createProduct = async (req: AuthRequest, res: Response) => {
   try {
@@ -8,15 +9,10 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
       ...req.body,
       company: req.user.company,
     });
-    console.log(product);
-    res.status(201).json({
-      success: true,
-      message: "Product created successfully",
-      product,
-    });
+    return new ApiResponse(201, "Product created successfully", { product }).send(res);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    return new ApiError(500, "Internal server error").send(res);
   }
 };
 
@@ -26,15 +22,9 @@ export const getProducts = async (req: AuthRequest, res: Response) => {
 
     const products = await Product.find({ company: companyId });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Fetched product successfully",
-        products,
-      });
+    return new ApiResponse(200, "Fetched product successfully", { products }).send(res);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    return new ApiError(500, "Internal server error").send(res);
   }
 };

@@ -1,5 +1,6 @@
 import type { Request,  Response, NextFunction} from "express"
 import jwt from "jsonwebtoken"
+import { ApiError } from "../utils/apiResponse.js";
 
 export interface AuthRequest extends Request{
     user? : any
@@ -9,13 +10,13 @@ export const authMiddleware = async (req : AuthRequest, res : Response, next : N
     const authHeader = req.headers.authorization;
 
     if(!authHeader?.startsWith('Bearer ')){
-        return res.status(401).json({ success : false,  message: 'Unauthorized: No token provided' });
+        return new ApiError(401, 'Unauthorized: No token provided').send(res);
     }
 
     const token = authHeader.split(' ')[1];
 
     if (!token) {
-    return res.status(401).json({ success: false, message: 'Unauthorized: Token missing' });
+            return new ApiError(401, 'Unauthorized: Token missing').send(res);
     }
 
     try {
@@ -27,6 +28,6 @@ export const authMiddleware = async (req : AuthRequest, res : Response, next : N
 
 
     } catch (error) {
-        return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+        return new ApiError(401, 'Unauthorized: Invalid token').send(res);
     }
 }

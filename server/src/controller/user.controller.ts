@@ -3,7 +3,7 @@ import User from "../models/User.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { AuthRequest } from "../middlewares/auth.middleware.js";
-import { success } from "zod";
+import { ApiError, ApiResponse } from "../utils/apiResponse.js";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -11,12 +11,10 @@ export const createUser = async (req: Request, res: Response) => {
 
     await User.create({ name, email, password, role, company });
 
-    res
-      .status(201)
-      .json({ success: true, message: "User created successfully" });
+    return new ApiResponse(201, "User created successfully").send(res);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    return new ApiError(500, "Internal server error").send(res);
   }
 };
 
@@ -27,17 +25,13 @@ export const loginUser = async (req: Request, res: Response) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User does not exist" });
+      return new ApiError(400, "User does not exist").send(res);
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid credentials" });
+      return new ApiError(400, "Invalid credentials").send(res);
     }
 
     const token = jwt.sign(
@@ -45,10 +39,10 @@ export const loginUser = async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
     );
 
-    res.status(200).json({ success: true, message: "Login successful", token });
+    return new ApiResponse(200, "Login successful", { token }).send(res);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    return new ApiError(500, "Internal server error").send(res);
   }
 };
 
@@ -56,15 +50,9 @@ export const getUserProfile = async (req: AuthRequest, res: Response) => {
   try {
     const user = req.user;
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Fetched user profile successfully",
-        user,
-      });
+    return new ApiResponse(200, "Fetched user profile successfully", { user }).send(res);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    return new ApiError(500, "Internal server error").send(res);
   }
 };

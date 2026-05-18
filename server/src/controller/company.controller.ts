@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
 import Company from "../models/company.model.js";
+import { ApiError, ApiResponse } from "../utils/apiResponse.js";
 
 export const createCompany = async (req: Request, res: Response) => {
     try {
@@ -12,10 +13,10 @@ export const createCompany = async (req: Request, res: Response) => {
             address,
         });
 
-        return res.status(201).json({ success: true, message: "Company created successfully" });
+        return new ApiResponse(201, "Company created successfully").send(res);
     } catch (error: unknown) {
         console.error(error);
-        return res.status(500).json({ success: false, message: "Internal server error" });
+        return new ApiError(500, "Internal server error").send(res);
     }
 };
 
