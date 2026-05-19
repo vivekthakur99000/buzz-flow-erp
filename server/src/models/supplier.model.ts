@@ -1,6 +1,6 @@
 import mongoose, {Schema, Types} from "mongoose";
 
-export interface ISupplier{
+export interface ISupplier extends Document{
     name : string,
     contactPerson : string,
     email : string,

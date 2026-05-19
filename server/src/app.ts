@@ -4,6 +4,7 @@ import userRouter from "./routes/user.routes.js";
 import productRouter from "./routes/product.routes.js";
 import orderRouter from "./routes/order.routes.js";
 import supplierRouter from "./routes/supplier.route.js";
+import purchaseRouter from "./routes/purchaseOrder.route.js";
 
 const app : Application = express();
 
@@ -14,6 +15,7 @@ app.use("/api/users", userRouter)
 app.use('/api/products', productRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/suppliers', supplierRouter);
+app.use('/api/purchase-order', purchaseRouter);
 
 export default app;
 

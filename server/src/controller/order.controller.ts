@@ -4,6 +4,7 @@ import type { AuthRequest } from "../middlewares/auth.middleware.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 import { ApiResponse, ApiError } from "../utils/apiResponse.js";
+import PurchaseOrder from "../models/purchaseOrder.model.js";
 
 export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
@@ -73,32 +74,56 @@ export const getOrders = async(req : AuthRequest, res :Response) => {
 
 export const getDashboardStats = async (req: AuthRequest, res: Response) => {
   try {
-    const companyId = req.user.company;
+    // Remember the Mongoose string fix!
+    const companyId = new mongoose.Types.ObjectId(req.user.company);
 
-    const stats = await Order.aggregate([
-      // Stage 1: FIX - Manually convert the string ID to a real MongoDB ObjectId
-      { 
-        $match: { 
-          company: new mongoose.Types.ObjectId(companyId) 
-        } 
-      },
-
-      // Stage 2: Group and calculate
-      {
-        $group: {
-          _id: null,
-          totalRevenue: { $sum: "$totalAmount" },
-          totalOrders: { $sum: 1 },
+    // Promise.all runs both aggregations simultaneously for maximum speed
+    const [salesStats, purchaseStats] = await Promise.all([
+      // Query 1: Calculate Total Revenue from Sales
+      Order.aggregate([
+        { $match: { company: companyId } },
+        {
+          $group: {
+            _id: null,
+            totalRevenue: { $sum: "$totalAmount" },
+            totalOrders: { $sum: 1 },
+          },
         },
-      },
+      ]),
+
+      // Query 2: Calculate Total Costs from Restocking (Only count 'Received' orders!)
+      PurchaseOrder.aggregate([
+        { $match: { company: companyId, status: "Received" } },
+        {
+          $group: {
+            _id: null,
+            totalCosts: { $sum: "$totalCost" },
+            totalPurchases: { $sum: 1 },
+          },
+        },
+      ]),
     ]);
 
-    const defaultStats = stats.length > 0 ? stats[0] : { totalRevenue: 0, totalOrders: 0 };
+    // Safely extract the numbers (default to 0 if they haven't sold/bought anything yet)
+    const revenue = salesStats.length > 0 ? salesStats[0].totalRevenue : 0;
+    const ordersCount = salesStats.length > 0 ? salesStats[0].totalOrders : 0;
+
+    const costs = purchaseStats.length > 0 ? purchaseStats[0].totalCosts : 0;
+    const purchasesCount = purchaseStats.length > 0 ? purchaseStats[0].totalPurchases : 0;
+
+    // THE ULTIMATE BUSINESS METRIC:
+    const grossProfit = revenue - costs;
 
     return res.status(200).json({
       success: true,
-      message: "Dashboard stats fetched successfully",
-      data: defaultStats,
+      message: "Master dashboard stats fetched successfully",
+      data: {
+        totalRevenue: revenue,
+        totalCosts: costs,
+        grossProfit: grossProfit, // If this is negative, the company is losing money!
+        totalOrders: ordersCount,
+        totalPurchases: purchasesCount,
+      },
     });
   } catch (error) {
     console.error(error);
