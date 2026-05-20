@@ -11,6 +11,6 @@ hrRouter.post('/punch-out', authMiddleware, punchOut);
 hrRouter.post('/leave', authMiddleware, applyLeave);
 hrRouter.post('/leave/:leaveId', authMiddleware, authorizeRoles("Admin", "Manager"), updateLeaveStatus);
 hrRouter.get('/all-requests', authMiddleware, authorizeRoles("Admin", "Manager"), getAllLeaveRequest);
-hrRouter.post('/payroll//generate', authMiddleware, authorizeRoles("Admin", "Manager"), generatePayroll);
+hrRouter.post('/payroll/generate', authMiddleware, authorizeRoles("Admin", "Manager"), generatePayroll);
 
 export default hrRouter;

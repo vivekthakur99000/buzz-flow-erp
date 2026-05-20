@@ -5,8 +5,7 @@ import { ApiError, ApiResponse } from "../utils/apiResponse.js";
 
 export const addEmployeeProfile = async (req: AuthRequest, res: Response) => {
     try {
-        const { designation, department, baseSalary } = req.body;
-        const userId = req.user._id;
+        const { designation, department, baseSalary, userId } = req.body;
         const companyId = req.user.company;
         // Check if employee profile already exists for the user in the company
         const existingProfile = await EmployeeProfile.findOne({ user: userId, company: companyId });
@@ -43,6 +42,19 @@ export const getEmployeeProfile = async (req: AuthRequest, res: Response) => {
         }
 
         return new ApiResponse(200, "Employee profile retrieved successfully", { employeeProfile }).send(res);
+    } catch (error) {
+        console.error(error);
+        return new ApiError(500, "Internal server error").send(res);
+    }
+};
+
+export const getAllEmployeeProfiles = async (req: AuthRequest, res: Response) => {
+    try {
+        const companyId = req.user.company;
+
+        const employeeProfiles = await EmployeeProfile.find({ company: companyId });
+
+        return new ApiResponse(200, "Employee profiles retrieved successfully", { employeeProfiles }).send(res);
     } catch (error) {
         console.error(error);
         return new ApiError(500, "Internal server error").send(res);
