@@ -5,14 +5,23 @@ import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 import { ApiResponse, ApiError } from "../utils/apiResponse.js";
 import PurchaseOrder from "../models/purchaseOrder.model.js";
+import Customer from "../models/customer.model.js";
 
 export const createOrder = async (req: AuthRequest, res: Response) => {
   try {
-    const { customerName, customerEmail, items } = req.body;
+    const { customer, items } = req.body;
 
     const { company, _id } = req.user;
 
-    let totalAmount = 0;
+    const customerRecord = await Customer.findOne({ _id: customer, company });
+
+    if (!customerRecord) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Customer not found." });
+    }
+
+    let subTotal = 0;
 
     const processedItems = [];
 
@@ -24,53 +33,70 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
 
       // If the product doesn't exist OR belongs to another company, product will be null
       if (!product) {
-        return new ApiError(404, `Product with ID ${item.product} not found in your inventory.`).send(res);
+        return new ApiError(
+          404,
+          `Product with ID ${item.product} not found in your inventory.`,
+        ).send(res);
       }
 
       if (product.stock < item.quantity) {
         return new ApiError(400, "Insufficient stock").send(res);
       }
 
-      totalAmount += product.price * item.quantity;
+      subTotal += product.price * item.quantity;
 
-      processedItems.push({product : product._id, quantity : item.quantity, priceAtPurchase : product.price});
+      processedItems.push({
+        product: product._id,
+        quantity: item.quantity,
+        priceAtPurchase: product.price,
+      });
 
       product.stock -= item.quantity;
 
       await product.save();
-
     }
 
+    // Calculate GST (18%) and Grand Total
+    const GST_RATE = 0.18;
+    const gstAmount = subTotal * GST_RATE;
+    const grandTotal = subTotal + gstAmount;
+
     const order = await Order.create({
-      customerName,
-      customerEmail,
+      customer: customerRecord._id,
       items: processedItems,
-      totalAmount,
+      totalAmount: subTotal,
+      gstAmount,
+      grandTotal,
       company,
       createdBy: _id,
     });
 
-    return new ApiResponse(201, "Order created successfully", { order }).send(res);
+    return new ApiResponse(201, "Order created successfully", { order }).send(
+      res,
+    );
   } catch (error) {
-     console.error(error);
-     return new ApiError(500, "Internal server error").send(res);
+    console.error(error);
+    return new ApiError(500, "Internal server error").send(res);
   }
 };
 
-export const getOrders = async(req : AuthRequest, res :Response) => {
-    try {
+export const getOrders = async (req: AuthRequest, res: Response) => {
+  try {
+    const { company } = req.user;
 
-        const {company} = req.user;
+    const orders = await Order.find({ company }).populate(
+      "items.product",
+      "name sku price",
+    );
 
-        const orders = await Order.find({company}).populate("items.product", "name sku price");
-
-        return new ApiResponse(200, "Order fetched successfully", {orders}).send(res);
-
-    } catch (error) {
-        console.log(error);
-        return new ApiError(500, "Internal server error").send(res);
-    }
-}
+    return new ApiResponse(200, "Order fetched successfully", { orders }).send(
+      res,
+    );
+  } catch (error) {
+    console.log(error);
+    return new ApiError(500, "Internal server error").send(res);
+  }
+};
 
 export const getDashboardStats = async (req: AuthRequest, res: Response) => {
   try {
@@ -109,7 +135,8 @@ export const getDashboardStats = async (req: AuthRequest, res: Response) => {
     const ordersCount = salesStats.length > 0 ? salesStats[0].totalOrders : 0;
 
     const costs = purchaseStats.length > 0 ? purchaseStats[0].totalCosts : 0;
-    const purchasesCount = purchaseStats.length > 0 ? purchaseStats[0].totalPurchases : 0;
+    const purchasesCount =
+      purchaseStats.length > 0 ? purchaseStats[0].totalPurchases : 0;
 
     // THE ULTIMATE BUSINESS METRIC:
     const grossProfit = revenue - costs;
@@ -127,6 +154,8 @@ export const getDashboardStats = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };

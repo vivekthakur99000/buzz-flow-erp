@@ -7,10 +7,11 @@ export interface IOrderItem {
 }
 
 export interface IOrder extends Document {
-    customerName: string;
-    customerEmail?: string;
+    customer : Types.ObjectId,
     items: IOrderItem[];
     totalAmount: number;
+    gstAmount : number,
+    grandTotal : number,
     status: "Pending" | "Completed" | "Cancelled";
     company: Types.ObjectId;
     createdBy: Types.ObjectId;
@@ -33,10 +34,11 @@ const orderItemSchema = new Schema<IOrderItem>(
 
 const orderSchema = new Schema<IOrder>(
     {
-        customerName: { type: String, required: true },
-        customerEmail: { type: String },
+        customer : {type : Schema.Types.ObjectId, ref : 'Customer', required : true},
         items: { type: [orderItemSchema], required: true, default: [] },
         totalAmount: { type: Number, required: true },
+        gstAmount: { type: Number, required: true, default: 0 }, // The 18% Tax
+        grandTotal: { type: Number, required: true }, // Subtotal + Tax (What the customer actually pays)
         status: {
             type: String,
             enum: ["Pending", "Completed", "Cancelled"],
