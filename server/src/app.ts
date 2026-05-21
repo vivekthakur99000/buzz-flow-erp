@@ -8,6 +8,7 @@ import purchaseRouter from "./routes/purchaseOrder.routes.js";
 import customerRouter from "./routes/customer.routes.js";
 import hrRouter from "./routes/hr.routes.js";
 import employeeProfileRouter from "./routes/employeeProfile.routes.js";
+import dashboardRouter from "./routes/dashboard.route.js";
 
 const app : Application = express();
 
@@ -22,6 +23,7 @@ app.use('/api/purchase-order', purchaseRouter);
 app.use('/api/customers', customerRouter);
 app.use('/api/hr', hrRouter);
 app.use('/api/employee-profile', employeeProfileRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 export default app;
 
