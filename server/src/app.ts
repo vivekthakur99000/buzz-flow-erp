@@ -9,8 +9,18 @@ import customerRouter from "./routes/customer.routes.js";
 import hrRouter from "./routes/hr.routes.js";
 import employeeProfileRouter from "./routes/employeeProfile.routes.js";
 import dashboardRouter from "./routes/dashboard.route.js";
+import cors from "cors"
 
 const app : Application = express();
+
+// 2. Add the CORS middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Your Vite frontend URL
+    credentials: true, // Allows cookies and authorization headers
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+  })
+);
 
 app.use(express.json())
 
