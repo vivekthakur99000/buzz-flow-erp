@@ -6,10 +6,8 @@ import { ApiError, ApiResponse } from "../utils/apiResponse.js";
 
 export const receiveInventory = async (req: AuthRequest, res: Response) => {
   try {
-    console.log("1. Request reached the controller!"); // <--- ADD THIS
     
     const { items, supplier } = req.body;
-    console.log("2. Items received:", items); // <--- ADD THIS
     const company = req.user.company;
 
     let totalCost = 0;

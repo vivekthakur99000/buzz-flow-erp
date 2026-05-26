@@ -7,6 +7,8 @@ import { Search, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { fetchProducts } from "./inventorySlice";
 import { CreateProductDialog } from "./CreateProductDialog";
+import { ReceiveStockDialog } from "./ReceiveStockDialog";
+import { fetchSuppliers } from "./supplierSlice";
 
 export const Inventory: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -28,6 +30,10 @@ export const Inventory: React.FC = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [dispatch, page, searchTerm]);
 
+  useEffect(() => {
+    dispatch(fetchSuppliers());
+  }, [dispatch]);
+
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -37,6 +43,7 @@ export const Inventory: React.FC = () => {
           <p className="text-slate-500 dark:text-slate-400">Manage your product catalog and track stock levels.</p>
         </div>
         <CreateProductDialog />
+        <ReceiveStockDialog/>
       </div>
 
       <Card>
