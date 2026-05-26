@@ -5,15 +5,17 @@ import { DashboardLayout } from './components/layout/DashboardLayout'
 import { Login } from './features/auth/Login'
 import { Register } from './features/auth/Register'
 import { Dashboard } from './features/dashboard/Dashboard'
+import { Inventory } from './features/inventory/Inventory'
+import { Suppliers } from './features/inventory/Suppliers'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Login />} />
+        {/* <Route path="/" element={<Login />} /> */}
         <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<h1>Login Page</h1>} />
+        <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<h1>Unauthorized Access</h1>} />
         
         {/* Protected Routes Wrapper */}
@@ -21,7 +23,9 @@ function App() {
           {/* Layout Wrapper - Everything inside here gets the Sidebar/Header */}
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard/>} />
-            {/* Future nested routes will go here */}
+            <Route path="/inventory" element={<Inventory/>} />
+            <Route path="/suppliers" element={<Suppliers/>} />
+            
           </Route>
         </Route>
       </Routes>

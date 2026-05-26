@@ -5,7 +5,13 @@ import { ApiError, ApiResponse } from "../utils/apiResponse.js";
 
 export const addSupplier = async (req : AuthRequest, res : Response) => {
     try {
-        await Supplier.create({...req.body, company : req.user.company});
+        const { contactName, contactPerson, ...rest } = req.body;
+
+        await Supplier.create({
+            ...rest,
+            contactPerson: contactPerson ?? contactName,
+            company : req.user.company,
+        });
 
         return new ApiResponse(201, "Supplier created successfully").send(res);
     } catch (error) {
