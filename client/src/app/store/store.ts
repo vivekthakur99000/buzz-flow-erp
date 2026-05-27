@@ -3,6 +3,8 @@ import authReducer from '../../features/auth/authSlice'
 import dashboardReducer from '../../features/dashboard/dashboardSlice'
 import inventoryReducer from "../../features/inventory/inventorySlice"
 import supplierReducer from "../../features/inventory/supplierSlice"
+import orderReducer from "../../features/sales/orderSlice"
+import customerReducer from "../../features/sales/customerSlice"
 
 
 export const store = configureStore({
@@ -10,7 +12,9 @@ export const store = configureStore({
     auth: authReducer,
     dashboard: dashboardReducer,
     inventory : inventoryReducer,
-    supplier : supplierReducer
+    supplier : supplierReducer,
+    order : orderReducer,
+    customer : customerReducer,
   },
 })
 

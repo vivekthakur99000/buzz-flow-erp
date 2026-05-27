@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Users, Package, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, LogOut, FileText, UserCog, Truck, ShoppingCart } from "lucide-react";
 import { Avatar, AvatarFallback } from "../../components/ui/avatar";
 import {
   DropdownMenu,
@@ -74,7 +74,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               `flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive ? "bg-slate-800 text-white" : "hover:bg-slate-800 hover:text-white"}`
             }
           >
-            <Users className="h-5 w-5" />
+            <UserCog className="h-5 w-5" />
             Employees
           </NavLink>
           <NavLink
@@ -83,8 +83,26 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               `flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive ? "bg-slate-800 text-white" : "hover:bg-slate-800 hover:text-white"}`
             }
           >
-            <Users className="h-5 w-5" />
+            <Truck className="h-5 w-5" />
             Suppliers
+          </NavLink>
+          <NavLink
+            to="/sales-order"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive ? "bg-slate-800 text-white" : "hover:bg-slate-800 hover:text-white"}`
+            }
+          >
+            <ShoppingCart className="h-5 w-5" />
+            Sales Orders
+          </NavLink>
+          <NavLink
+            to="/orders"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive ? "bg-slate-800 text-white" : "hover:bg-slate-800 hover:text-white"}`
+            }
+          >
+            <FileText className="h-5 w-5" />
+            Order History
           </NavLink>
         </nav>
       </aside>
