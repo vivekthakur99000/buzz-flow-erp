@@ -5,6 +5,9 @@ import inventoryReducer from "../../features/inventory/inventorySlice"
 import supplierReducer from "../../features/inventory/supplierSlice"
 import orderReducer from "../../features/sales/orderSlice"
 import customerReducer from "../../features/sales/customerSlice"
+import employeeReducer from "../../features/employees/employeeSlice"
+import employeeProfileReducer from "../../features/employees/employeeProfileSlice"
+import hrReducer from "../../features/hr/hrSlice"
 
 
 export const store = configureStore({
@@ -15,6 +18,9 @@ export const store = configureStore({
     supplier : supplierReducer,
     order : orderReducer,
     customer : customerReducer,
+    employee : employeeReducer,
+    employeeProfile : employeeProfileReducer,
+    hr : hrReducer,
   },
 })
 

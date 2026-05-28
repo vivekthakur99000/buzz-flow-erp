@@ -9,10 +9,27 @@ import Company from "../models/company.model.js";
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password, role, company } = req.body;
+    const authReq = req as AuthRequest;
+    const resolvedCompany = authReq.user?.company || company;
 
-    await User.create({ name, email, password, role, company });
+    if (!resolvedCompany) {
+      return new ApiError(400, "Company is required to create user").send(res);
+    }
+
+    await User.create({ name, email, password, role, company: resolvedCompany });
 
     return new ApiResponse(201, "User created successfully").send(res);
+  } catch (error) {
+    console.log(error);
+    return new ApiError(500, "Internal server error").send(res);
+  }
+};
+
+export const getCompanyUsers = async (req: AuthRequest, res: Response) => {
+  try {
+    const users = await User.find({ company: req.user.company }).select("-password");
+
+    return new ApiResponse(200, "Users fetched successfully", { users }).send(res);
   } catch (error) {
     console.log(error);
     return new ApiError(500, "Internal server error").send(res);

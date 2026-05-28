@@ -9,6 +9,8 @@ import { Inventory } from './features/inventory/Inventory'
 import { Suppliers } from './features/inventory/Suppliers'
 import { SalesOrder } from './features/sales/SalesOrder'
 import { OrderHistory } from './features/sales/OrderHistory'
+import { Employees } from './features/employees/Employee'
+import { HRPortal } from './features/hr/HRPortal'
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
             <Route path="/suppliers" element={<Suppliers/>} />
             <Route path="/sales-order" element={<SalesOrder/>} />
             <Route path="/orders" element={<OrderHistory/>} />
+            <Route path="/employees" element={<Employees/>} />
+            <Route path="/hr" element={<HRPortal/>} />
             
           </Route>
         </Route>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, LogOut, FileText, UserCog, Truck, ShoppingCart } from "lucide-react";
+import { LayoutDashboard, Package, LogOut, FileText, UserCog, Truck, ShoppingCart, Clock3 } from "lucide-react";
 import { Avatar, AvatarFallback } from "../../components/ui/avatar";
 import {
   DropdownMenu,
@@ -103,6 +103,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           >
             <FileText className="h-5 w-5" />
             Order History
+          </NavLink>
+          <NavLink
+            to="/hr"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive ? "bg-slate-800 text-white" : "hover:bg-slate-800 hover:text-white"}`
+            }
+          >
+            <Clock3 className="h-5 w-5" />
+            HR Portal
           </NavLink>
         </nav>
       </aside>
