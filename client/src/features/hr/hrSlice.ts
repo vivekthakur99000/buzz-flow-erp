@@ -2,9 +2,28 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import api from "@/lib/api";
 
+export interface LeaveRequest {
+  _id: string;
+  user?: {
+    name?: string;
+  };
+  leaveType: string;
+  startDate: string;
+  endDate: string;
+  reason: string;
+  status: "Pending" | "Approved" | "Rejected";
+}
+
+interface LeaveFormPayload {
+  leaveType: string;
+  startDate: string;
+  endDate: string;
+  reason: string;
+}
+
 interface HRState {
-  attendanceToday: any | null;
-  leaveRequests: any[];
+  attendanceToday: Date | null;
+  leaveRequests: LeaveRequest[];
   isLoading: boolean;
   error: string | null;
 }
@@ -57,6 +76,22 @@ export const fetchLeaveRequests = createAsyncThunk(
         return rejectWithValue(
           error.response.data.message || "Failed to fetch leave requests",
         );
+      }
+      return rejectWithValue("An unexpected error occurred");
+    }
+  },
+);
+
+export const applyLeave = createAsyncThunk(
+  "hr/applyLeave",
+  async (payload: LeaveFormPayload, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await api.post("/hr/leave", payload);
+      dispatch(fetchLeaveRequests());
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data.message || "Failed to apply for leave");
       }
       return rejectWithValue("An unexpected error occurred");
     }
@@ -128,6 +163,17 @@ const hrSlice = createSlice({
       .addCase(fetchLeaveRequests.rejected, (state, action) => {
         state.isLoading = false;
         state.error = (action.payload as string) || "Failed to fetch leave requests";
+      })
+      .addCase(applyLeave.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(applyLeave.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(applyLeave.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = (action.payload as string) || "Failed to apply for leave";
       })
       .addCase(updateLeaveStatus.pending, (state) => {
         state.isLoading = true;

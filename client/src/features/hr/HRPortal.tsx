@@ -5,6 +5,7 @@ import { Button } from "../../components/ui/button";
 import { Clock, Calendar, CheckCircle, XCircle } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { punchIn, punchOut, fetchLeaveRequests, updateLeaveStatus } from "./hrSlice";
+import { ApplyLeaveDialog } from "./ApplyLeaveDialog";
 
 export const HRPortal: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -46,10 +47,7 @@ export const HRPortal: React.FC = () => {
           <p className="text-slate-500">Manage your daily attendance and time-off requests.</p>
         </div>
         
-        <Button variant="outline" className="flex items-center gap-2">
-          <Calendar className="h-4 w-4" />
-          Apply for Leave
-        </Button>
+        <ApplyLeaveDialog />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
