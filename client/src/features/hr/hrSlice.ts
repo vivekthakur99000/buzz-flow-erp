@@ -2,6 +2,18 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import api from "@/lib/api";
 
+export interface AttendanceRecord {
+  _id: string;
+  user?: string;
+  date: string;
+  status: "Present" | "Absent" | "halfDay" | "Leave";
+  checkInTime?: string | null;
+  checkOutTime?: string | null;
+  company?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface LeaveRequest {
   _id: string;
   user?: {
@@ -22,7 +34,7 @@ interface LeaveFormPayload {
 }
 
 interface HRState {
-  attendanceToday: Date | null;
+  attendanceToday: AttendanceRecord | null;
   leaveRequests: LeaveRequest[];
   isLoading: boolean;
   error: string | null;

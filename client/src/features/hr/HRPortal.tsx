@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { Button } from "../../components/ui/button";
-import { Clock, Calendar, CheckCircle, XCircle } from "lucide-react";
+import { Clock, CheckCircle, XCircle } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { punchIn, punchOut, fetchLeaveRequests, updateLeaveStatus } from "./hrSlice";
 import { ApplyLeaveDialog } from "./ApplyLeaveDialog";
@@ -13,6 +13,8 @@ export const HRPortal: React.FC = () => {
   // --- REDUX STATE (You will wire this up next!) ---
   const { leaveRequests, attendanceToday, isLoading } = useAppSelector((state) => state.hr);
   const { user } = useAppSelector((state) => state.auth); // To check if user is Admin/Manager
+
+  const hasPunchedOut = Boolean(attendanceToday?.checkOutTime);
   
 
   // A simple live clock for the UI
@@ -27,7 +29,7 @@ export const HRPortal: React.FC = () => {
   }, [dispatch]);
 
   const handleTimeClock = () => {
-    if (attendanceToday && !attendanceToday.checkOutTime) {
+    if (attendanceToday && !hasPunchedOut) {
       dispatch(punchOut());
       return;
     }
@@ -76,16 +78,16 @@ export const HRPortal: React.FC = () => {
               <Button 
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" 
                 size="lg"
-                disabled={isLoading || (attendanceToday && attendanceToday.checkOutTime)}
+                disabled={isLoading || hasPunchedOut}
                 onClick={handleTimeClock}
               >
-                {attendanceToday ? (attendanceToday.checkOutTime ? "Punched Out" : "Punch Out") : "Punch In"}
+                {attendanceToday ? (hasPunchedOut ? "Punched Out" : "Punch Out") : "Punch In"}
               </Button>
             </div>
             
             {attendanceToday && (
               <p className="text-xs text-slate-500">
-                Punched in at: {new Date(attendanceToday.checkInTime).toLocaleTimeString()}
+                Punched in at: {attendanceToday.checkInTime ? new Date(attendanceToday.checkInTime).toLocaleTimeString() : "N/A"}
               </p>
             )}
           </CardContent>
