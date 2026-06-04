@@ -16,7 +16,7 @@ const app : Application = express();
 // 2. Add the CORS middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // Your Vite frontend URL
+    origin: process.env.CLIENT_URL || '*', // Your Vite frontend URL
     credentials: true, // Allows cookies and authorization headers
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
   })
