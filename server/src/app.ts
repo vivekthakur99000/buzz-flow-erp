@@ -13,10 +13,21 @@ import cors from "cors"
 
 const app : Application = express();
 
+const allowedOrigins = [
+  "http://localhost:5173", // For local development
+  "https://buzz-flow-erp.vercel.app" // Your live Vercel URL (NO trailing slash at the end!)
+];
+
 // 2. Add the CORS middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || '*', // Your Vite frontend URL
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    }, // Your Vite frontend URL
     credentials: true, // Allows cookies and authorization headers
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
   })
