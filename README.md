@@ -1,5 +1,7 @@
 # Buzz Flow ERP
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 Full-stack ERP application (server + client) for small businesses. This repository contains a TypeScript Node/Express server and a Vite + React + TypeScript client.
 
 ## Table of Contents
@@ -149,12 +151,4 @@ Please follow the existing code style and add tests for new features where possi
 
 Specify a license for the project (e.g., MIT). Add contact information or a link to an issue tracker for questions.
 
----
 
-If you'd like, I can also:
-
-- Add example `.env.example` files for both server and client
-- Add scripts for database seeding or a Postman/Insomnia collection for API testing
-- Create a short CONTRIBUTING.md and CODE_OF_CONDUCT.md
-
-Please tell me which additions you want next.
