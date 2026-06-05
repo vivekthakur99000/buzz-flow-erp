@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -93,6 +93,13 @@ export const Login: React.FC = () => {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
+
+            <div className="text-center text-sm text-slate-500">
+              Don&apos;t have an account?{" "}
+              <Link to="/register" className="font-medium text-slate-900 hover:underline dark:text-slate-100">
+                Sign up
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>
